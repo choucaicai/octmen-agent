@@ -4,26 +4,29 @@ OctMem-Agent is an advanced, memory-augmented Aerial VLN framework designed for 
 
 # OCT Agent Data Collection
 
-This section describes how to collect AirSim trajectory data.
+This section describes how to collect AirSim point-cloud and trajectory data. For dataset setup, refer to [iLearn-Lab/ACMMM25-UAV_ON](https://github.com/iLearn-Lab/ACMMM25-UAV_ON).
 
-## Prepare Data
+## Collect Point Cloud
 
-Set the environment config:
+First generate the scene point cloud from AirSim depth observations:
 
-```text
-tools/configs/<ENV_NAME>.yaml
+```bash
+python tools/pcd_gen/airsim_pointcloud.py --env BrushifyUrban
 ```
 
-Required inputs:
+Output:
+
+```text
+tools/pcd_gen_data/<ENV_NAME>_point_map_finegrain_v2/depth_final.ply
+```
+
+Then copy or link it to the path used by trajectory planning:
 
 ```text
 tools/scene_data/pcd_map/<ENV_NAME>.ply
-tools/data/dataset/<ENV_NAME>_train.json
 ```
 
-`<ENV_NAME>_train.json` should contain `episode_id`, `start_pose`, and target `pose` list. Each target pose generates one trajectory.
-
-If the map is `.pcd`, convert it first:
+If you already have a `.pcd` map, convert it to `.ply`:
 
 ```bash
 cd tools
@@ -31,6 +34,7 @@ python pcd_gen/convert.py \
   --input scene_data/pcd_map/BrushifyUrban.pcd \
   --output scene_data/pcd_map/BrushifyUrban.ply
 ```
+
 
 ## Plan Trajectories
 
@@ -49,6 +53,8 @@ tools/output-v2/<ENV_NAME>_result.json
 The trajectory JSON contains `record_list`, `action_list`, `start_pos`, and `goal_pos`.
 
 ## Record Images
+
+Record RGB images from the planned trajectories:
 
 ```bash
 cd tools
@@ -83,27 +89,3 @@ Depth output:
 ```text
 tools/record_output_with_depth/images/<ENV_NAME>/<episode_id>/<pose_idx>/uav_on_0_depth/d_00000.npy
 ```
-
-## Optional: Generate Point Cloud
-
-```bash
-python tools/pcd_gen/airsim_pointcloud.py --env BrushifyUrban
-```
-
-Output:
-
-```text
-tools/pcd_gen_data/<ENV_NAME>_point_map_finegrain_v2/depth_final.ply
-```
-
-Copy or link it to:
-
-```text
-tools/scene_data/pcd_map/<ENV_NAME>.ply
-```
-
-## Notes
-
-- `thread_params` in `tools/configs/<ENV_NAME>.yaml` controls AirSim ports and parallel workers.
-- `record_traj.py` skips already collected JSON files and supports resume.
-- Update local AirSim executable paths in `tools/pcd_gen/run_airsim.py` before running.
