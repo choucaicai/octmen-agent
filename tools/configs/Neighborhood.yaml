@@ -1,0 +1,31 @@
+datagen:
+  env:                        "Neighborhood"                          # Environment name, please keep it the same as the file name
+  num_threads: 2
+
+traj_map:
+  DilateRadius:               0                                        # Map dilation radius
+  VoxelWidth:                 0.01                                      # Voxel map resolution
+  MapBound:                   [-421, 134, -449, 219, -115, 102]      # Global voxel map range, within which trajectory generation is also performed.
+  MapDelta:                   [25, 25, 10]                             # Step size of gridded point cloud sampling
+  pcd_scale_ratio:            1                                        # The scale between the point cloud and the unified coordinate system.
+  traj_scale_ratio:           1                                        # The scale between motion actions and the unified coordinate system.
+  map_elevation:              0                                        # The horizontal height of the ground in the environment
+  min_height_thresh:          6   
+
+thread_params:                                                         # Multi-threaded configuration, which allows setting up multiple threads for concurrent data collection and supports parallel simulation scenarios on either a single PC or across multiple PCs.
+  - name: "thread_0"                                                   # Thread ID
+    aim_port: 30204                                                     # The port that receives commands from the trajectory planner.
+  - name: "thread_1"                                                   # Thread ID
+    aim_port: 30205                                                   # The port that receives commands from the trajectory planner.
+  - name: "thread_2"                                                   # Thread ID
+    aim_port: 30206                                                   # The port that receives commands from the trajectory planner.
+  - name: "thread_3"                                                   # Thread ID
+    aim_port: 30207                                                # The port that receives commands from the trajectory planner.
+  # - name: "thread_4"                                                   # Thread ID
+  #   aim_port: 30104                                                     # The port that receives commands from the trajectory planner.
+  # - name: "thread_5"                                                   # Thread ID
+  #   aim_port: 30105                                                   # The port that receives commands from the trajectory planner.
+  # - name: "thread_6"                                                   # Thread ID
+  #   aim_port: 30106                                                   # The port that receives commands from the trajectory planner.
+  # - name: "thread_7"                                                   # Thread ID
+  #   aim_port: 30107                                                # The port that receives commands from the trajectory planner.
