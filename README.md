@@ -2,7 +2,7 @@
 
 OctMem-Agent is an advanced, memory-augmented Aerial VLN framework designed for autonomous Unmanned Aerial Vehicles (UAVs) performing object-goal navigation.
 
-# OCT Agent Data Collection
+# Data Collection
 
 This section describes how to collect AirSim point-cloud and trajectory data. For dataset setup, refer to [iLearn-Lab/ACMMM25-UAV_ON](https://github.com/iLearn-Lab/ACMMM25-UAV_ON).
 
@@ -89,3 +89,7 @@ Depth output:
 ```text
 tools/record_output_with_depth/images/<ENV_NAME>/<episode_id>/<pose_idx>/uav_on_0_depth/d_00000.npy
 ```
+
+# Train Model
+
+[Waiting for model upload]
