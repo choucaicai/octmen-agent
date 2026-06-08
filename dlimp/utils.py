@@ -69,7 +69,7 @@ def vmap(fn: Callable) -> Callable:
         # print('flattened_structure:',len(flattened_structure),flattened_structure[0].shape)
         # print('flattened_structure:',flattened_structure)
         # unstacked_tensors = list(map(tf.unstack, flattened_structure))
-        # Use tf.unstack or manual indexing.
+        # 用 tf.unstack 或手动索引
         first_tensor = flattened_structure[0]
         if isinstance(first_tensor, tf.RaggedTensor):
             batch_size = first_tensor.nrows()
@@ -78,7 +78,7 @@ def vmap(fn: Callable) -> Callable:
         # tf.print('batch_size:', batch_size)
         
         def process_single_sample(i):
-            # Extract all fields for the i-th sample.
+            # 提取第 i 个样本的所有字段
             single_sample_flat = [t[i] for t in flattened_structure]
             single_sample = tf.nest.pack_sequence_as(structure, single_sample_flat)
             # tf.print('res:', single_sample)
@@ -88,22 +88,22 @@ def vmap(fn: Callable) -> Callable:
         
         def make_spec(tensor):
             if isinstance(tensor, tf.RaggedTensor):
-                # RaggedTensor: preserve nested levels.
-                inner_shape = tensor.shape[1:]  # Drop the batch dimension.
+                # RaggedTensor: 保留嵌套层级
+                inner_shape = tensor.shape[1:]  # 去掉 batch 维度
                 return tf.TensorSpec(shape=inner_shape, dtype=tensor.dtype)
             else:
-                # Dense Tensor: drop the first dimension from the shape.
+                # 普通 Tensor: shape 去掉第一维
                 return tf.TensorSpec(
                     shape=tensor.shape[1:] if tensor.shape.ndims  > 0 else (),
                     dtype=tensor.dtype
                 )
         sample_0 = tf.nest.map_structure(lambda t: t[0], structure)
-        sample_output = fn(sample_0)  # Run once.
+        sample_output = fn(sample_0)  # 执行一次
         output_signature = tf.nest.map_structure(
             lambda t: tf.TensorSpec(shape=t.shape, dtype=t.dtype),
             sample_output
         )
-        # Use tf.map_fn to process all samples in the batch.
+        # 用 tf.map_fn 批量处理所有样本
         transformed_samples = tf.map_fn(
             process_single_sample,
             tf.range(batch_size),
@@ -111,8 +111,8 @@ def vmap(fn: Callable) -> Callable:
         )
         # print('transformed_samples:',transformed_samples)
         # result = tf.nest.map_structure(
-        #     lambda *x: tf.stack(x),  # Stack function: takes tensors and returns a stacked tensor.
-        #     *transformed_samples      # Unpack all sample results.
+        #     lambda *x: tf.stack(x),  # 堆叠函数：接收多个张量，返回堆叠后的张量
+        #     *transformed_samples      # 展开所有样本的结果
         # )
         result = transformed_samples
         return result
