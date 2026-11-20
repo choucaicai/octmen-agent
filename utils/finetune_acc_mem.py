@@ -68,6 +68,8 @@ class FinetuneMemoryConfig:
     lora_dropout: float = 0.0
     init_oct_model: bool = True
     gradient_checkpointing: bool = TRAIN['gradient_checkpointing']
+    train_vision_backbone: bool = TRAIN['train_vision_backbone']
+    train_memory_modules: bool = TRAIN['train_memory_modules']
     memory_voxel_size: float = 5.0
     # Q-Former token counts (scene and frontier queries).
     num_query_tokens: int = int(os.environ.get('NUM_QUERY_TOKENS') or TRAIN['num_query_tokens'])
@@ -333,11 +335,14 @@ def load_memory_vla(cfg, device):
     elif cfg.warm_start_checkpoint:
         raise ValueError('warm_start_checkpoint currently expects a LoRA memory checkpoint')
     core = base_model(model)
-    core.vision_backbone.requires_grad_(False)
+    core.vision_backbone.requires_grad_(cfg.train_vision_backbone)
     for name in selected.auxiliaries:
-        getattr(core, name).requires_grad_(True)
+        getattr(core, name).requires_grad_(cfg.train_memory_modules)
     if cfg.warm_start_checkpoint:
-        for name in selected.auxiliaries:
+        names = list(selected.auxiliaries)
+        if (Path(cfg.warm_start_checkpoint) / 'vision_backbone.bin').is_file():
+            names.append('vision_backbone')
+        for name in names:
             weights = torch.load(Path(cfg.warm_start_checkpoint) / f'{name}.bin', map_location='cpu', weights_only=True)
             getattr(core, name).load_state_dict(weights, strict=True)
     if cfg.gradient_checkpointing:
@@ -391,7 +396,8 @@ def save_memory_checkpoint(model, processor, cfg, directory, step):
     selected = resolve_model(cfg.model_module, cfg.model_class)
     stamp_model_config(core.config, cfg.model_module, cfg.model_class, selected.auxiliaries)
     core.config.save_pretrained(directory)
-    for name in selected.auxiliaries:
+    names = selected.auxiliaries + (('vision_backbone',) if cfg.train_vision_backbone else ())
+    for name in names:
         torch.save({k: v.detach().cpu() for k, v in getattr(core, name).state_dict().items()}, directory / f'{name}.bin')
     (directory / 'training_config.json').write_text(json.dumps(asdict(cfg), default=str, indent=2))
     (directory / 'training_progress.json').write_text(json.dumps({'optimizer_step': step, 'weights_only': True}))

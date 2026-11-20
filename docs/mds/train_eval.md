@@ -49,6 +49,12 @@ Training hyperparameters (`max_steps`, `epoches`, `save_steps`,
 `total_batch_size`, `learning_rate`, `lora_rank`, ...) are in the `train`
 section of `configs/config.yaml.example`.
 
+`train.train_vision_backbone` (default `false`) and
+`train.train_memory_modules` (default `true`) control whether the vision
+backbone and the memory modules (`oct_model`, `explore_model`) are trained.
+When the vision backbone is trained, checkpoints also save
+`vision_backbone.bin`, and `utils.merge_lora` restores it.
+
 ## 3. Training
 
 ```bash

@@ -117,7 +117,10 @@ def merge_octmem(args, checkpoint, output, base_path):
     # Base OpenVLA has no memory branches; explore_model and oct_model are restored below.
     check_loading(loading_info, tuple(name + '.' for name in auxiliaries))
     module_counts = {}
-    for name in auxiliaries:
+    restored = list(auxiliaries)
+    if (checkpoint / 'vision_backbone.bin').is_file():
+        restored.append('vision_backbone')
+    for name in restored:
         weights = torch.load(checkpoint / f'{name}.bin', map_location='cpu', weights_only=True)
         branch = getattr(model, name)
         branch.load_state_dict(weights, strict=True)

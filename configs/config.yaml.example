@@ -28,6 +28,8 @@ train:
   num_query_tokens: 128
   num_frontier_tokens: 16
   gradient_checkpointing: true
+  train_vision_backbone: false
+  train_memory_modules: true
   attn_implementation: flash_attention_2
   raw_camera_name: uav_on_0
 
