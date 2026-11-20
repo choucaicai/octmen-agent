@@ -1,0 +1,86 @@
+runtime:
+  env_dir: null
+  cuda_visible_devices: "0,1,2,3"
+  num_processes: 4
+  omp_num_threads: 4
+
+train:
+  accelerate_config: configs/acc_configs/deep_z1_config.yaml
+  master_port: 29331
+  vla_path: null
+  raw_train_json: null
+  raw_media_root: null
+  raw_val_json: null
+  raw_index_path: cache/train.json.oct_agent.index.json
+  run_root_dir: runs
+  warm_start_checkpoint: null
+  model_class: OpenVLAForActionPrediction
+  total_batch_size: 16
+  tbptt_steps: 1
+  grad_accumulation_steps: 4
+  learning_rate: 2.0e-5
+  max_grad_norm: 1.0
+  epoches: 3
+  max_steps: null
+  save_steps: 2500
+  lora_rank: 512
+  lora_alpha: 512
+  num_query_tokens: 128
+  num_frontier_tokens: 16
+  gradient_checkpointing: true
+  attn_implementation: flash_attention_2
+  raw_camera_name: uav_on_0
+
+eval:
+  model_path: null
+  output_folder: null
+  eval_dataset: ../DATASET/UAV-ON-data/valset/merged_episodes_with_action.json
+  airsim_env_root: ../ENVS
+  airsim_settings: configs/airsim_configs/base_settings_512.json
+  airsim_default_port: 30000
+  simulator_gpu_ids: null
+  simulator_startup_timeout: 120
+  eval_max_steps: 100
+  success_distance: 20.0
+  unnorm_key: uavon_raw_json
+  attn_implementation: flash_attention_2
+  camera_name: uav_on_0
+  settle_seconds: 0.1
+  log_step_interval: 10
+  seed: 42
+  num_threads: 4
+
+airsim_scenes:
+  BrushifyUrban: TRAIN_ENVS/BrushifyUrban/BrushifyUrban.sh
+  CabinLake: TRAIN_ENVS/CabinLake/CabinLake.sh
+  CityPark: TRAIN_ENVS/CityPark/CityPark.sh
+  DownTown: TRAIN_ENVS/DownTown/DownTown1.sh
+  Neighborhood: TRAIN_ENVS/Neighborhood/NewNeighborhood.sh
+  Slum: TRAIN_ENVS/Slum/slum1.sh
+  UrbanJapan: TRAIN_ENVS/UrbanJapan/UrbanJapan.sh
+  Venice: TRAIN_ENVS/Venice/vinice_new1.sh
+  WesternTown: TRAIN_ENVS/WesternTown/WesternTown1.sh
+  WinterTown: TRAIN_ENVS/WinterTown/WinterTown1.sh
+  Barnyard_test: TEST_ENVS/Barnyard/Barnyard_test1.sh
+  BrushifyRoad_test: TEST_ENVS/BrushifyRoad/BrushifyRoad_test1.sh
+  BrushifyUrban_test: TEST_ENVS/BrushifyUrban/BrushifyUrban.sh
+  CabinLake_test: TEST_ENVS/CabinLake/CabinLake.sh
+  CityPark_test: TEST_ENVS/CityPark/CityPark.sh
+  CityStreet_test: TEST_ENVS/CityStreet/CleanCityStreet.sh
+  DownTown_test: TEST_ENVS/DownTown/DownTown_test1.sh
+  ModularNeighborhood_test: TEST_ENVS/Neighborhood/NewNeighborhood.sh
+  NYC_test: TEST_ENVS/NYC/NYC1950.sh
+  Slum_test: TEST_ENVS/Slum/Slum_test1.sh
+  UrbanJapan_test: TEST_ENVS/UrbanJapan/UrbanJapan.sh
+  Venice_test: TEST_ENVS/Venice/Vinice_test1.sh
+  WesternTown_test: TEST_ENVS/WesternTown/WesternTown_test1.sh
+  WinterTown_test: TEST_ENVS/WinterTown/WinterTown_test1.sh
+
+merge:
+  vla_path: null
+  run_dir: null
+  merge_lora_path: null
+  adapter_dir: adapters
+  device: auto
+  num_threads: 8
+  max_shard_size: 5GB

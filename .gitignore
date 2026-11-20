@@ -83,3 +83,11 @@ tools/traj_gen/output*/
 pcd_points.npy
 big_kdtree.pkl
 saved_positions.json
+
+# OctMem-Agent local config and outputs
+/cache/
+/runs/
+/results/
+/tests
+/configs/config.yaml
+!/data/
